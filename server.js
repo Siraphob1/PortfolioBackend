@@ -3,26 +3,31 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3600 
 const cors = require('cors')
+const corsOptions = require('./config/corsOptions');
 const nodemailer = require("nodemailer");
 const sendemail = require('./model/sendemail');
 const helmet = require('helmet');
 
-//middleware 3-party
-app.use(cors());
+
+
+//Built-in middleware
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-app.use(helmet());
 app.disable('x-powered-by');
 
+//3-party middleware 
+app.use(cors(corsOptions));
+app.use(helmet());
 
 
-// console.log(process.env.ESENDER)
+
+//route 
 app.post('/sendmail' , async (req , res)=>{
     const {namevisitor , emailvisitor , messagevisitor} = req.body;   
 
     if(!namevisitor || !emailvisitor || !messagevisitor) return res.sendStatus(400)
 
-    const reciever_email = 'siraphobtop95@gmail.com';
+    const reciever_email = process.env.ERECIEVER;
     const sender_email = process.env.ESENDER;
     const sender_pwd = process.env.PSENDER;
 
